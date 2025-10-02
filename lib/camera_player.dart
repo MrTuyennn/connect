@@ -13,6 +13,7 @@ class CameraPlayer extends StatelessWidget {
     this.mic = 1,
     this.sound = 1,
     this.type = 0,
+    this.onPlatformViewCreated
   });
 
   final String uuid;
@@ -22,6 +23,7 @@ class CameraPlayer extends StatelessWidget {
   final int mic;
   final int sound;
   final int type;
+  final Function(int)? onPlatformViewCreated;
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +40,7 @@ class CameraPlayer extends StatelessWidget {
           'type': type,
         },
         creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated: onPlatformViewCreated,
       );
     } else {
       return const Text('CameraConnectView is only supported on Android');

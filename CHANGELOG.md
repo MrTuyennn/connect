@@ -1,3 +1,7 @@
+
+## 1.0.3
+- Implement widget PTZ camera
+
 ## 1.0.2
 - Implement feature hide/show mic or sound
 - Implement switch mic && sound with camera type

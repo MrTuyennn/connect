@@ -3,6 +3,7 @@ package com.connect
 import android.app.Activity
 import com.connect.module.native_view.CameraMultiFactory
 import com.connect.module.native_view.CameraPlayerFactory
+import com.connect.module.native_view.JoyStick
 import com.connect.utils.AppConstant
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -12,13 +13,18 @@ class CameraConnectPlugin : FlutterPlugin, ActivityAware {
 
   private var activity: Activity? = null
   private lateinit var flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
+  //private var joyStick: JoyStick? = null
 
   override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+   // joyStick = JoyStick(activity!!, binding.binaryMessenger, null)
+
     flutterPluginBinding = binding
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
+
+
     flutterPluginBinding
       .platformViewRegistry
       .registerViewFactory(

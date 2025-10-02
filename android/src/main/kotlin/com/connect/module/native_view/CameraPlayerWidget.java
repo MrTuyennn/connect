@@ -21,6 +21,7 @@ import com.camera.camera_connect.R;
 import com.connect.module.module.action.PlayerAction;
 import com.connect.module.module.bean.DeviceBean;
 import com.connect.module.module.bean.EventResult;
+import com.connect.utils.AppConstant;
 import com.connect.utils.SharedPreferencesUtils;
 import com.tutk.IOTC.AVAPIs;
 import com.tutk.IOTC.IOTCAPIs;
@@ -39,13 +40,14 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.core.app.ActivityCompat;
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 
-public class CameraPlayerWidget implements PlatformView, MethodChannel.MethodCallHandler, SurfaceHolder.Callback, View.OnClickListener {
+public class CameraPlayerWidget implements PlatformView, SurfaceHolder.Callback, View.OnClickListener {
 
     private static final String TAG = "CameraPlayerWidget";
     private static final String LICENSE_KEY = "AQAAAMHY3vUDYAhbA/F5ekE+00jq1ACuTIznLJDK55p/jpI7riWN6bp7KYLTDrsQ3XJkzsVkJSBK3rmD3ZPAWF4JlZzn3J/qpmA3O31yfX7VxVNDXd1h3vJYFtgsjOcl9vn4c4k2oPKXHUGjtGxH3O+4Wc14AI/mkmvJIFVI2k3M2J9eanoTqXbEhLMRRpXa+tmbCzM4/L/q3NMZqc4sdErADNIb";
@@ -83,6 +85,8 @@ public class CameraPlayerWidget implements PlatformView, MethodChannel.MethodCal
     private boolean isMuted = false;
     private boolean isSpeak = false;
 
+    private MethodChannel channel;
+
     public CameraPlayerWidget(Context context, Activity activity, int id, BinaryMessenger messenger, Object args) {
         this.activity = activity;
 
@@ -119,6 +123,24 @@ public class CameraPlayerWidget implements PlatformView, MethodChannel.MethodCal
         myRequetPermission();
         initDeviceSource();
         initView();
+
+        channel = new MethodChannel(messenger, AppConstant.CHANNEL_CAMERA_PLAYER);
+        channel.setMethodCallHandler(new MethodChannel.MethodCallHandler() {
+            @Override
+            public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+                if (call.method.equals("methodPtz")) {
+                    Integer code = (call.arguments instanceof Integer) ? (Integer) call.arguments : null;
+                    if (code == null) {
+                        return; // QUAN TRỌNG
+                    }
+                    Log.d(TAG, "methodPtz code=" + code);
+                    ptzCamera(code);
+                    result.success(true);
+                } else {
+                    result.notImplemented();
+                }
+            }
+        });
     }
 
     private void initTUTK() {
@@ -185,6 +207,17 @@ public class CameraPlayerWidget implements PlatformView, MethodChannel.MethodCal
         // sau khi init view và camera xong thì start camera
         startPlay(0);
     }
+
+    private void ptzCamera(int ptz) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //用子线程调用
+                players.get(currentPlayers).getPlayerAction().ptzControl(ptz);
+            }
+        }).start();
+    }
+
 
 
     private void startPlay(final int index) {
@@ -294,10 +327,10 @@ public class CameraPlayerWidget implements PlatformView, MethodChannel.MethodCal
         }
     }
 
-    @Override
-    public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-
-    }
+//    @Override
+//    public void onMethodCall(MethodCall call, MethodChannel.Result result) {
+//
+//    }
 
     @Nullable
     @Override
@@ -323,6 +356,7 @@ public class CameraPlayerWidget implements PlatformView, MethodChannel.MethodCal
             if (event.getResponseCode() == 1) {
                 progressBars.get(playerId - 1).setVisibility(View.GONE);
             }
+            Toast.makeText(activity, "Kết nối player " + playerId + " thành công!", Toast.LENGTH_SHORT).show();
         } else if (event.getRequestUrl().equals(NativeMediaPlayer.CONNECT)) {
             int playerId = (int) event.getObject();
             Log.d(TAG, "Connect failed for playerId=" + playerId);
