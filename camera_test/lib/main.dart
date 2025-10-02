@@ -34,7 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
   MethodChannel? channelPlayer;
 
   void callback(x, y) {
-    print('callback x => $x and y $y');
   }
 
   @override
@@ -59,18 +58,17 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
           ),
-          if (showJoyStick) ...[
+          if (showJoyStick) 
             JoyStick(
               radius: 100.0,
               stickRadius: 20,
               callback: callback,
               onPtzChanged: (value) {
-                print('onPtzChanged value => $value');
                 channelPlayer?.invokeMethod('methodPtz', value);
               },
             ),
             SizedBox(height: 100),
-          ],
+          
         ],
       ),
     );

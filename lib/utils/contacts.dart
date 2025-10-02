@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class Contacts {
   static const int PTZ_STOP = 0;
   static const int PTZ_ACTION_UP = 1;
