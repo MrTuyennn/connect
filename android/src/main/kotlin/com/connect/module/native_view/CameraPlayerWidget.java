@@ -209,13 +209,9 @@ public class CameraPlayerWidget implements PlatformView, SurfaceHolder.Callback,
     }
 
     private void ptzCamera(int ptz) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //用子线程调用
-                players.get(currentPlayers).getPlayerAction().ptzControl(ptz);
-            }
-        }).start();
+        if(players.get(currentPlayers) != null && players.get(currentPlayers).getPlayerAction() != null){
+            players.get(currentPlayers).getPlayerAction().ptzControl(ptz);
+        }
     }
 
 
